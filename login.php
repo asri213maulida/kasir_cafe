@@ -1,5 +1,12 @@
 <?php
+session_start();
+if(isset($_SESSION['admin_username'])){
+    header("location:dashboard.php");
+
+}
 include("koneksikasir.php");
+?>
+<?php
 $username = "";
 $password = "";
 $err ="";
@@ -15,9 +22,14 @@ if(isset($_POST['login'])){
         $q1 = mysqli_query($koneksi, $sql1);
         $r1 = mysqli_fetch_array($q1);
         if($r1['password'] !=md5($password)){
-            $err .= "<li>Akun tidak di temukan</li>"
+            $err .= "<li>Akun tidak di temukan</li>";
 
         }
+    }
+    if(empty($err)){
+        $_SESSION['username'] = $username;
+        header("location:dashboard.php");
+        exit();
     }
 }
 
@@ -76,8 +88,14 @@ if(isset($_POST['login'])){
     </style>
 </head>
 <body>
-    <form class="login-box" action="proses_login.php" method="POST">
+    <form class="login-box" action="dashboard.php" method="POST">
         <h2>LOGIN</h2>
+        <?php
+        if($err){
+            echo "<ul>$err</ul>";
+        }
+        ?>
+        <input type="text" value="<?php echo $username ?>" name="nama" placeholder="Nama :" required>
         <input type="text" name="username" placeholder="User Name :" required>
         <input type="password" name="password" placeholder="Password :" required>
         <button type="submit">LOGIN</button>
